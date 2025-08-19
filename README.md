@@ -1,31 +1,78 @@
-# Finansal Takip Uygulaması
+# 💰 Finansal Takip Uygulaması
 
-Modern bir web uygulaması ile kişisel finans yönetimi ve birikim tavsiyeleri.
+Modern ve kullanıcı dostu arayüzü ile kişisel finanslarınızı takip edin, analiz edin ve akıllı tasarruf önerileri alın.
 
-## Özellikler
+## ✨ Özellikler
 
-- 👤 Kullanıcı girişi ve kayıt sistemi
-- 💰 Maaş takibi
-- 🧾 Harcama yönetimi (kategorilere göre)
-- 🏠 Düzenli fatura takibi (elektrik, su, doğalgaz, internet)
-- 💡 Akıllı birikim tavsiyeleri
-- 📊 Finansal raporlar ve grafikler
-- 📱 Responsive tasarım
+### � Kullanıcı Yönetimi
+- Güvenli kullanıcı kaydı ve giriş sistemi
+- Kullanıcı profili yönetimi
+- Oturum güvenlik kontrolü
 
-## Teknolojiler
+### � Gelir Takibi
+- Maaş, ek gelir ve diğer gelir türlerini kaydetme
+- Aylık gelir analizi ve grafikleri
+- Gelir kaynak kategorileri
+
+### 🛒 Harcama Yönetimi
+- Kategorilere göre harcama takibi
+- Harcama trendleri ve analizi
+- Aylık/yıllık harcama raporları
+- Harcama hedefleri belirleme
+
+### 🧾 Fatura Takibi
+- Düzenli faturalarınızı takip edin (elektrik, su, doğalgaz, internet, telefon)
+- Fatura ödeme hatırlatıcıları
+- Fatura trend analizi
+- Yıllık fatura maliyet hesaplamaları
+
+### � Kredi Kartı Yönetimi
+- Kredi kartı borç takibi
+- Minimum ödeme hesaplamaları
+- Faiz oranları ve toplam borç analizi
+- Kredi kartı kullanım tavsiyeleri
+
+### 🏦 Kredi Takibi
+- Mevcut kredilerinizi takip edin
+- Kalan borç ve ödeme planları
+- Erken kapatma hesaplamaları
+- Kredi faiz analizi
+
+### � Birikim ve Yatırım
+- Tasarruf hedefleri belirleme
+- Birikim trend analizi
+- Yatırım önerileri
+- Mali durum değerlendirmesi
+
+### 📊 Detaylı Analizler
+- Kapsamlı mali durum raporu
+- Gelir-gider dengesi analizi
+- Net mal varlığı hesaplama
+- Görsel grafikler ve çizelgeler
+- Aylık/yıllık karşılaştırmalar
+
+### 🎨 Kullanıcı Deneyimi
+- Modern dark/light tema desteği
+- Responsive mobil uyumlu tasarım
+- Sezgisel kullanıcı arayüzü
+- Hızlı navigasyon ve erişim
+
+## 🛠 Teknolojiler
 
 ### Frontend
-- React 18
-- Material-UI (MUI)
-- Chart.js
-- Axios
+- **React 18** - Modern UI framework
+- **Material-UI (MUI)** - Profesyonel UI bileşenleri
+- **React Router v6** - SPA routing
+- **Recharts** - Veri görselleştirme
+- **Axios** - HTTP client
+- **Context API** - State yönetimi
 
 ### Backend
-- Node.js
-- Express.js
-- MongoDB
-- JWT Authentication
-- bcryptjs
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **JSON File Database** - Basit veri depolama
+- **bcryptjs** - Şifre hashleme
+- **Simple Authentication** - Session yönetimi
 
 ## Kurulum
 
