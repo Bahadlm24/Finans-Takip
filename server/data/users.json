@@ -1,0 +1,13 @@
+[
+  {
+    "id": "meh79djlx9w500yh89b",
+    "createdAt": "2025-08-18T14:18:02.577Z",
+    "updatedAt": "2025-08-18T14:18:02.577Z",
+    "name": "Test Kullanıcı",
+    "email": "test@example.com",
+    "password": "$2a$10$.plKDYMUnSjPZNPPG1kmsOmQEIVGbA0UUpZCu1onODLF/7xPTr9W.",
+    "monthlySalary": 0,
+    "savingsGoal": 0,
+    "currency": "TRY"
+  }
+]
