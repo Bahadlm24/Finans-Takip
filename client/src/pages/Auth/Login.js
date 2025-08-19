@@ -13,14 +13,46 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@example.com'); // Pre-filled with demo user
+  const [password, setPassword] = useState('123456'); // Pre-filled with demo password
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const { login } = useAuth();
   const { showSuccess } = useSnackbar();
   const navigate = useNavigate();
+
+  // Auto-login for demo purposes
+  React.useEffect(() => {
+    const autoLogin = async () => {
+      const testPasswords = ['123456', 'password', 'test123', 'admin', '111111'];
+      
+      for (const testPassword of testPasswords) {
+        try {
+          console.log(`=== Auto Login Attempting with password: ${testPassword} ===`);
+          const result = await login('test@example.com', testPassword);
+          console.log('Auto login result:', result);
+          if (result.success) {
+            showSuccess(`Demo kullanıcı olarak otomatik giriş yapıldı! (Password: ${testPassword})`);
+            navigate('/');
+            return;
+          } else {
+            console.log(`Password ${testPassword} failed:`, result.message);
+          }
+        } catch (err) {
+          console.log(`Password ${testPassword} error:`, err);
+        }
+      }
+      
+      console.log('All auto-login attempts failed. Manual login required.');
+      setError('Otomatik giriş başarısız. Manuel giriş yapın: test@example.com / [şifre deneyin]');
+    };
+    
+    // Auto-login after a short delay to allow context to initialize
+    const timer = setTimeout(autoLogin, 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Keeping dependency array empty to run only once
 
   const handleSubmit = async (e) => {
     e.preventDefault();

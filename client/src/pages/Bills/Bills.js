@@ -65,17 +65,36 @@ const Bills = () => {
   ];
 
   useEffect(() => {
+    console.log('Bills component mounted, token:', token);
+    if (!token) {
+      setError('Yetkilendirme token\'ı bulunamadı');
+      setLoading(false);
+      return;
+    }
     fetchBills();
-  }, []);
+  }, [token]);
 
   const fetchBills = async () => {
     try {
+      console.log('Fetching bills with token:', token);
       const response = await axios.get('http://localhost:5000/api/bills', {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Bills response:', response.data);
       setBills(response.data);
+      setError(''); // Clear any previous errors
     } catch (err) {
-      setError('Faturalar yüklenirken hata oluştu');
+      console.error('Fetch bills error:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      
+      if (err.response?.status === 401) {
+        setError('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+      } else if (err.response?.data?.message) {
+        setError(`Server Error: ${err.response.data.message}`);
+      } else {
+        setError(`Faturalar yüklenirken hata oluştu: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -83,30 +102,49 @@ const Bills = () => {
 
   const handleSubmit = async () => {
     try {
+      setError(''); // Clear previous errors
+      
       const data = {
         ...formData,
         amount: parseFloat(formData.amount),
         recurringDay: formData.recurringDay ? parseInt(formData.recurringDay) : null
       };
 
+      console.log('Gönderilen data:', data);
+      console.log('Token:', token);
+
       if (editingBill) {
-        await axios.put(
+        const response = await axios.put(
           `http://localhost:5000/api/bills/${editingBill.id}`,
           data,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        console.log('Update response:', response.data);
       } else {
-        await axios.post(
+        const response = await axios.post(
           'http://localhost:5000/api/bills',
           data,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        console.log('Create response:', response.data);
       }
 
       fetchBills();
       handleCloseDialog();
     } catch (err) {
-      setError('İşlem sırasında hata oluştu');
+      console.error('Bills error:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      
+      if (err.response?.data?.errors) {
+        setError(`Validation Error: ${err.response.data.errors.map(e => e.msg).join(', ')}`);
+      } else if (err.response?.data?.message) {
+        setError(`Server Error: ${err.response.data.message}`);
+      } else if (err.response?.status === 401) {
+        setError('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+      } else {
+        setError(`İşlem sırasında hata oluştu: ${err.message}`);
+      }
     }
   };
 

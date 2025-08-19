@@ -53,6 +53,7 @@ router.post('/', [
   body('name').trim().isLength({ min: 1 }).withMessage('Fatura adı gereklidir'),
   body('type').isIn(['electricity', 'water', 'gas', 'internet', 'phone', 'rent', 'insurance', 'other']).withMessage('Geçersiz fatura tipi'),
   body('amount').isNumeric().withMessage('Tutar sayısal değer olmalıdır'),
+  body('notes').optional().trim(),
   body('dueDate').isISO8601().withMessage('Geçerli bir vade tarihi giriniz')
 ], async (req, res) => {
   try {

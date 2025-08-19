@@ -1,0 +1,18 @@
+[
+  {
+    "id": "mei6pknf7gki3sp21xv",
+    "createdAt": "2025-08-19T06:50:24.843Z",
+    "updatedAt": "2025-08-19T07:16:31.587Z",
+    "userId": "meh79djlx9w500yh89b",
+    "name": "test-1",
+    "bank": "test-1",
+    "limit": 500,
+    "currentDebt": 0,
+    "minimumPaymentRate": 2,
+    "minimumPaymentAmount": 100,
+    "interestRate": 2.5,
+    "cutoffDay": 1,
+    "paymentDueDay": 20,
+    "isActive": true
+  }
+]

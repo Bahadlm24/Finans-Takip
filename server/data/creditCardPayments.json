@@ -1,0 +1,12 @@
+[
+  {
+    "id": "mei7n5jne57857lcnkq",
+    "createdAt": "2025-08-19T07:16:31.571Z",
+    "updatedAt": "2025-08-19T07:16:31.571Z",
+    "userId": "meh79djlx9w500yh89b",
+    "creditCardId": "mei6pknf7gki3sp21xv",
+    "amount": 500,
+    "paymentDate": "2025-08-19",
+    "type": "payment"
+  }
+]

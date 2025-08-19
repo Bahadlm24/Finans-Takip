@@ -41,10 +41,11 @@ router.get('/', auth, async (req, res) => {
 router.post('/', [
   auth,
   body('name').trim().isLength({ min: 1 }).withMessage('Kredi adı gereklidir'),
-  body('bank').trim().isLength({ min: 1 }).withMessage('Banka adı gereklidir'),
+  body('bank').optional().trim(),
   body('principal').isNumeric().withMessage('Ana para sayısal değer olmalıdır'),
   body('interestRate').isNumeric().withMessage('Faiz oranı sayısal değer olmalıdır'),
   body('termMonths').isInt({ min: 1 }).withMessage('Vade ay olarak pozitif sayı olmalıdır'),
+  body('notes').optional().trim(),
   body('startDate').isISO8601().withMessage('Geçerli bir başlangıç tarihi giriniz')
 ], async (req, res) => {
   try {
@@ -53,20 +54,20 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, bank, principal, interestRate, termMonths, startDate, loanType = 'personal', purpose } = req.body;
+    const { name, bank, principal, interestRate, termMonths, startDate, type = 'personal', notes } = req.body;
     
     const monthlyPayment = calculateMonthlyPayment(principal, interestRate, termMonths);
 
     const loan = db.add('loans', {
-      userId: req.user._id.toString(),
+      userId: req.user.id,
       name,
-      bank,
+      bank: bank || '',
       principal,
       interestRate,
       termMonths,
       startDate,
-      loanType, // 'personal', 'mortgage', 'car', 'business', 'other'
-      purpose,
+      type, // 'personal', 'home', 'auto', 'credit_card', 'business', 'other'
+      notes: notes || '',
       monthlyPayment: parseFloat(monthlyPayment.toFixed(2)),
       paidInstallments: 0,
       isActive: true

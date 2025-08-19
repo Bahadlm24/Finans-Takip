@@ -46,11 +46,10 @@ router.post('/', [
   auth,
   body('amount').isNumeric().withMessage('Tutar sayısal değer olmalıdır'),
   body('category').isIn([
-    'food', 'transport', 'shopping', 'entertainment', 
-    'health', 'education', 'clothing', 'gifts', 
-    'travel', 'other'
+    'food', 'transportation', 'shopping', 'entertainment', 
+    'health', 'education', 'housing', 'utilities', 'other'
   ]).withMessage('Geçersiz kategori'),
-  body('description').trim().isLength({ min: 1 }).withMessage('Açıklama gereklidir'),
+  body('description').optional().trim(),
   body('date').isISO8601().withMessage('Geçerli bir tarih giriniz')
 ], async (req, res) => {
   try {
@@ -87,9 +86,8 @@ router.put('/:id', [
   auth,
   body('amount').optional().isNumeric().withMessage('Tutar sayısal değer olmalıdır'),
   body('category').optional().isIn([
-    'food', 'transport', 'shopping', 'entertainment', 
-    'health', 'education', 'clothing', 'gifts', 
-    'travel', 'other'
+    'food', 'transportation', 'shopping', 'entertainment', 
+    'health', 'education', 'housing', 'utilities', 'other'
   ]).withMessage('Geçersiz kategori')
 ], async (req, res) => {
   try {

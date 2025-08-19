@@ -1,0 +1,15 @@
+[
+  {
+    "id": "mei9l26jqa0e26ci1zh",
+    "createdAt": "2025-08-19T08:10:53.131Z",
+    "updatedAt": "2025-08-19T08:10:53.131Z",
+    "userId": "meh79djlx9w500yh89b",
+    "name": "askerlik",
+    "targetAmount": 300000,
+    "currentAmount": 0,
+    "targetDate": "2026-12-31",
+    "category": "other",
+    "description": "",
+    "status": "active"
+  }
+]

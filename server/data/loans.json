@@ -1,0 +1,19 @@
+[
+  {
+    "id": "mei9ljf8i9abm366og",
+    "createdAt": "2025-08-19T08:11:15.476Z",
+    "updatedAt": "2025-08-19T08:11:15.476Z",
+    "userId": "meh79djlx9w500yh89b",
+    "name": "test",
+    "bank": "yapı",
+    "principal": 10000,
+    "interestRate": 4.69,
+    "termMonths": 3,
+    "startDate": "2025-08-19",
+    "type": "",
+    "notes": "",
+    "monthlyPayment": 3359.42,
+    "paidInstallments": 0,
+    "isActive": true
+  }
+]

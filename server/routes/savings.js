@@ -4,6 +4,17 @@ const db = require('../utils/jsonDatabase');
 
 const router = express.Router();
 
+// Birikim hedefleri listesi
+router.get('/goals', auth, async (req, res) => {
+  try {
+    const savingsGoals = db.findByFilter('savingsGoals', goal => goal.userId === req.user.id);
+    res.json(savingsGoals);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Sunucu hatası' });
+  }
+});
+
 // Birikim tavsiyeleri
 router.get('/recommendations', auth, async (req, res) => {
   try {
@@ -272,6 +283,83 @@ router.get('/goals', auth, async (req, res) => {
     } else {
       res.json(savingsGoals);
     }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Sunucu hatası' });
+  }
+});
+
+// Birikim hedefi ekleme endpoint'i
+router.post('/goals', auth, async (req, res) => {
+  try {
+    const { name, targetAmount, currentAmount, targetDate, category, description } = req.body;
+    
+    const goal = db.add('savingsGoals', {
+      userId: req.user.id,
+      name: name || '',
+      targetAmount: parseFloat(targetAmount) || 0,
+      currentAmount: parseFloat(currentAmount) || 0,
+      targetDate: targetDate || null,
+      category: category || 'other',
+      description: description || '',
+      createdAt: new Date().toISOString(),
+      status: 'active'
+    });
+
+    res.status(201).json({
+      message: 'Birikim hedefi başarıyla eklendi',
+      goal
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Sunucu hatası' });
+  }
+});
+
+// Birikim hedefi güncelleme endpoint'i
+router.put('/goals/:id', auth, async (req, res) => {
+  try {
+    const { name, targetAmount, currentAmount, targetDate, category, description } = req.body;
+    
+    const existingGoal = db.findById('savingsGoals', parseInt(req.params.id));
+    if (!existingGoal || existingGoal.userId !== req.user.id) {
+      return res.status(404).json({ message: 'Birikim hedefi bulunamadı' });
+    }
+
+    const updatedGoal = db.update('savingsGoals', parseInt(req.params.id), {
+      name: name !== undefined ? name : existingGoal.name,
+      targetAmount: targetAmount !== undefined ? parseFloat(targetAmount) : existingGoal.targetAmount,
+      currentAmount: currentAmount !== undefined ? parseFloat(currentAmount) : existingGoal.currentAmount,
+      targetDate: targetDate !== undefined ? targetDate : existingGoal.targetDate,
+      category: category !== undefined ? category : existingGoal.category,
+      description: description !== undefined ? description : existingGoal.description,
+      updatedAt: new Date().toISOString()
+    });
+
+    res.json({
+      message: 'Birikim hedefi başarıyla güncellendi',
+      goal: updatedGoal
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Sunucu hatası' });
+  }
+});
+
+// Birikim hedefi silme endpoint'i
+router.delete('/goals/:id', auth, async (req, res) => {
+  try {
+    const existingGoal = db.findById('savingsGoals', parseInt(req.params.id));
+    if (!existingGoal || existingGoal.userId !== req.user.id) {
+      return res.status(404).json({ message: 'Birikim hedefi bulunamadı' });
+    }
+
+    db.deleteById('savingsGoals', parseInt(req.params.id));
+
+    res.json({ message: 'Birikim hedefi başarıyla silindi' });
 
   } catch (error) {
     console.error(error);

@@ -82,14 +82,23 @@ const Savings = () => {
 
   useEffect(() => {
     fetchSavingsData();
-  }, []);
+  }, [token]); // token dependency eklendi
 
   const fetchSavingsData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/savings', {
+      const goalsResponse = await axios.get('http://localhost:5000/api/savings/goals', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSavingsData(response.data);
+      
+      const recommendationsResponse = await axios.get('http://localhost:5000/api/savings/recommendations', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setSavingsData({
+        goals: goalsResponse.data,
+        recommendations: recommendationsResponse.data,
+        analytics: {}
+      });
     } catch (err) {
       setError('Birikim verileri yüklenirken hata oluştu');
     } finally {

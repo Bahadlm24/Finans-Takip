@@ -37,8 +37,10 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useSnackbar } from '../../contexts/SnackbarContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CreditCards = () => {
+  const { token } = useAuth();
   const [creditCards, setCreditCards] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,8 +48,19 @@ const CreditCards = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+
+  // Debug token
+  useEffect(() => {
+    console.log('=== CreditCards Component Debug ===');
+    console.log('AuthContext token:', token);
+    console.log('localStorage token:', localStorage.getItem('token'));
+    console.log('Token type:', typeof token);
+    console.log('Token length:', token?.length);
+  }, [token]);
   const [anchorEl, setAnchorEl] = useState(null);
   const { showSuccess, showError } = useSnackbar();
+
+  console.log('CreditCards component token:', token);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -74,20 +87,41 @@ const CreditCards = () => {
   });
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (token) {
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
+      console.log('Fetching credit cards data...');
+      console.log('Token:', token);
+      
+      if (!token) {
+        showError('Yetkilendirme token\'ı bulunamadı');
+        return;
+      }
+      
       const [cardsResponse, summaryResponse] = await Promise.all([
-        axios.get('/api/credit-cards'),
-        axios.get('/api/credit-cards/summary')
+        axios.get('http://localhost:5000/api/credit-cards', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get('http://localhost:5000/api/credit-cards/summary', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
       ]);
+      
+      console.log('Credit cards response:', cardsResponse.data);
+      console.log('Summary response:', summaryResponse.data);
+      
       setCreditCards(cardsResponse.data);
       setSummary(summaryResponse.data);
     } catch (error) {
-      showError('Veriler yüklenirken hata oluştu');
+      console.error('Credit cards fetch error:', error);
+      console.error('Error response:', error.response?.data);
+      showError('Veriler yüklenirken hata oluştu: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -95,7 +129,17 @@ const CreditCards = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('/api/credit-cards', {
+      console.log('Submit request data:', {
+        formData,
+        token: token ? 'Token exists' : 'No token from AuthContext'
+      });
+
+      if (!token) {
+        showError('Oturum açmanız gerekiyor');
+        return;
+      }
+
+      await axios.post('http://localhost:5000/api/credit-cards', {
         ...formData,
         limit: parseFloat(formData.limit),
         currentDebt: parseFloat(formData.currentDebt || 0),
@@ -104,6 +148,11 @@ const CreditCards = () => {
         interestRate: parseFloat(formData.interestRate),
         cutoffDay: parseInt(formData.cutoffDay),
         paymentDueDay: parseInt(formData.paymentDueDay)
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       showSuccess('Kredi kartı başarıyla eklendi');
@@ -111,15 +160,33 @@ const CreditCards = () => {
       resetForm();
       fetchData();
     } catch (error) {
+      console.error('Submit error:', error.response?.data || error.message);
       showError(error.response?.data?.message || 'Kredi kartı eklenirken hata oluştu');
     }
   };
 
   const handlePayment = async () => {
     try {
-      await axios.post(`/api/credit-cards/${selectedCard.id}/payment`, {
+      console.log('Payment request data:', {
+        cardId: selectedCard?.id,
+        amount: paymentData.amount,
+        paymentDate: paymentData.paymentDate,
+        token: token ? 'Token exists' : 'No token from AuthContext'
+      });
+
+      if (!token) {
+        showError('Oturum açmanız gerekiyor');
+        return;
+      }
+
+      await axios.post(`http://localhost:5000/api/credit-cards/${selectedCard.id}/payment`, {
         amount: parseFloat(paymentData.amount),
         paymentDate: paymentData.paymentDate
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       showSuccess('Ödeme başarıyla kaydedildi');
@@ -127,17 +194,35 @@ const CreditCards = () => {
       setPaymentData({ amount: '', paymentDate: new Date().toISOString().split('T')[0] });
       fetchData();
     } catch (error) {
+      console.error('Payment error:', error.response?.data || error.message);
       showError(error.response?.data?.message || 'Ödeme kaydedilirken hata oluştu');
     }
   };
 
   const handleExpense = async () => {
     try {
-      await axios.post(`/api/credit-cards/${selectedCard.id}/expense`, {
+      console.log('Expense request data:', {
+        cardId: selectedCard?.id,
+        amount: expenseData.amount,
+        description: expenseData.description,
+        token: token ? 'Token exists' : 'No token from AuthContext'
+      });
+
+      if (!token) {
+        showError('Oturum açmanız gerekiyor');
+        return;
+      }
+
+      await axios.post(`http://localhost:5000/api/credit-cards/${selectedCard.id}/expense`, {
         amount: parseFloat(expenseData.amount),
         description: expenseData.description,
         category: expenseData.category,
         expenseDate: expenseData.expenseDate
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       showSuccess('Harcama başarıyla kaydedildi');
@@ -150,6 +235,7 @@ const CreditCards = () => {
       });
       fetchData();
     } catch (error) {
+      console.error('Expense error:', error.response?.data || error.message);
       showError(error.response?.data?.message || 'Harcama kaydedilirken hata oluştu');
     }
   };
@@ -168,20 +254,57 @@ const CreditCards = () => {
     });
   };
 
-  const handleMenuClick = (event, card) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedCard(card);
-  };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedCard(null);
+    // Don't reset selectedCard here as we need it for dialogs
   };
 
   const getUtilizationColor = (rate) => {
     if (rate < 30) return 'success';
     if (rate < 70) return 'warning';
     return 'error';
+  };
+
+  const handleMenuClick = (event, card) => {
+    console.log('=== handleMenuClick Debug ===');
+    console.log('Card object:', card);
+    console.log('Card currentDebt:', card?.currentDebt);
+    console.log('Card id:', card?.id);
+    console.log('Card name:', card?.name);
+    setAnchorEl(event.currentTarget);
+    setSelectedCard(card);
+  };
+
+  const handleOpenPaymentDialog = () => {
+    console.log('=== Opening Payment Dialog ===');
+    console.log('Selected card from menu:', selectedCard);
+    
+    // Find the current card data from creditCards array to ensure we have fresh data
+    const currentCardData = creditCards.find(card => card.id === selectedCard?.id);
+    console.log('Current card data from creditCards:', currentCardData);
+    
+    if (currentCardData) {
+      setSelectedCard(currentCardData); // Update with fresh data
+    }
+    
+    setPaymentDialogOpen(true);
+    handleMenuClose();
+  };
+
+  const handleOpenExpenseDialog = () => {
+    console.log('=== Opening Expense Dialog ===');
+    console.log('Selected card from menu:', selectedCard);
+    
+    // Find the current card data from creditCards array to ensure we have fresh data
+    const currentCardData = creditCards.find(card => card.id === selectedCard?.id);
+    console.log('Current card data from creditCards:', currentCardData);
+    
+    if (currentCardData) {
+      setSelectedCard(currentCardData); // Update with fresh data
+    }
+    
+    setExpenseDialogOpen(true);
+    handleMenuClose();
   };
 
   if (loading) {
@@ -351,16 +474,16 @@ const CreditCards = () => {
                       </TableCell>
                       <TableCell>{card.bank}</TableCell>
                       <TableCell align="right">
-                        ₺{card.limit.toLocaleString()}
+                        ₺{(card.limit || 0).toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
-                        <Typography color={card.currentDebt > 0 ? 'error' : 'inherit'}>
-                          ₺{card.currentDebt.toLocaleString()}
+                        <Typography color={(card.currentDebt || 0) > 0 ? 'error' : 'inherit'}>
+                          ₺{(card.currentDebt || 0).toLocaleString()}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
                         <Typography color="success.main">
-                          ₺{card.availableCredit.toLocaleString()}
+                          ₺{(card.availableCredit || 0).toLocaleString()}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
@@ -401,21 +524,11 @@ const CreditCards = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem
-          onClick={() => {
-            setPaymentDialogOpen(true);
-            handleMenuClose();
-          }}
-        >
+        <MenuItem onClick={handleOpenPaymentDialog}>
           <Payment sx={{ mr: 1 }} />
           Ödeme Yap
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setExpenseDialogOpen(true);
-            handleMenuClose();
-          }}
-        >
+        <MenuItem onClick={handleOpenExpenseDialog}>
           <ShoppingCart sx={{ mr: 1 }} />
           Harcama Ekle
         </MenuItem>
@@ -497,7 +610,11 @@ const CreditCards = () => {
             margin="normal"
             value={paymentData.amount}
             onChange={(e) => setPaymentData({ ...paymentData, amount: e.target.value })}
-            helperText={`Mevcut borç: ₺${selectedCard?.currentDebt?.toLocaleString()}`}
+            helperText={`Mevcut borç: ₺${(selectedCard?.currentDebt || 0).toLocaleString()} (Debug: ${JSON.stringify({
+              currentDebt: selectedCard?.currentDebt,
+              type: typeof selectedCard?.currentDebt,
+              selectedCardId: selectedCard?.id
+            })})`}
           />
           <TextField
             label="Ödeme Tarihi"

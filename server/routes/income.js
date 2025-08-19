@@ -43,7 +43,8 @@ router.get('/', auth, async (req, res) => {
 router.post('/', [
   auth,
   body('amount').isNumeric().withMessage('Tutar sayısal değer olmalıdır'),
-  body('source').isIn(['salary', 'bonus', 'freelance', 'investment', 'other']).withMessage('Geçersiz gelir kaynağı'),
+  body('source').isIn(['salary', 'bonus', 'freelance', 'investment', 'rental', 'other']).withMessage('Geçersiz gelir kaynağı'),
+  body('description').optional().trim(),
   body('date').isISO8601().withMessage('Geçerli bir tarih giriniz')
 ], async (req, res) => {
   try {
@@ -78,7 +79,7 @@ router.post('/', [
 router.put('/:id', [
   auth,
   body('amount').optional().isNumeric().withMessage('Tutar sayısal değer olmalıdır'),
-  body('source').optional().isIn(['salary', 'bonus', 'freelance', 'investment', 'other']).withMessage('Geçersiz gelir kaynağı')
+  body('source').optional().isIn(['salary', 'bonus', 'freelance', 'investment', 'rental', 'other']).withMessage('Geçersiz gelir kaynağı')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
